@@ -7,8 +7,6 @@ class LN_Node(models.Model):
 
     def ln_node_dir(instance, filename):
         # assumes MEDIA_ROOT=Base_Dir/contracts/
-        # Note:  might need to create the /ln_nodes/node_{0} folder/subfolder contstruct when the contract is created
-        # when the node object is created, then create the folder structure
         return 'ln_nodes/node_{0}/{1}'.format(instance.pk, filename)
     
     tls_path=models.FileField(upload_to=ln_node_dir)    
@@ -72,10 +70,9 @@ class SaleOfService(models.Model):
 
 class ContractText(models.Model):
     def contract_files_path(instance, filename):
-        # assumes MEDIA_ROOT=Base_Dir/contracts
-        # Note:  might need to create the /contract_texts/contract_{0} folder/subfolder contstruct when the contract is created
-        # when the contract object is created, then create the folder structure
-        return '/contracts_docs/contract_{0}/{1}'.format(instance.contract, filename)
+        # assumes MEDIA_ROOT=Base_Dir/contracts/
+
+        return 'contracts_docs/contract_{0}/{1}'.format(instance.contract.pk, filename)
         pass
     contract=models.ForeignKey(Contract, on_delete=models.CASCADE, blank=True, null=True)
     file=models.FileField(upload_to=contract_files_path)
