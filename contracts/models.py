@@ -4,8 +4,15 @@ from django.db import models
 
 class LN_Node(models.Model):
     address=models.CharField(max_length=50, default=None)
-    tls_path=models.CharField(max_length=500, default=None)
-    macaroon_path=models.CharField(max_length=500, default=None)
+
+    def ln_node_dir(instance, filename):
+        # assumes MEDIA_ROOT=Base_Dir/contracts/
+        # Note:  might need to create the /ln_nodes/node_{0} folder/subfolder contstruct when the contract is created
+        # when the node object is created, then create the folder structure
+        return 'ln_nodes/node_{0}/{1}'.format(instance.pk, filename)
+    
+    tls_path=models.FileField(upload_to=ln_node_dir)    
+    macaroon_path=models.FileField(upload_to=ln_node_dir)
     status=models.CharField(max_length=50, blank=True, null=True)
 
 class Contract(models.Model):
@@ -65,10 +72,10 @@ class SaleOfService(models.Model):
 
 class ContractText(models.Model):
     def contract_files_path(instance, filename):
-        # assumes MEDIA_ROOT=Base_Dir/contracts/contracts_docs
+        # assumes MEDIA_ROOT=Base_Dir/contracts
         # Note:  might need to create the /contract_texts/contract_{0} folder/subfolder contstruct when the contract is created
         # when the contract object is created, then create the folder structure
-        return '/contract_{0}/{1}'.format(instance.contract, filename)
+        return '/contracts_docs/contract_{0}/{1}'.format(instance.contract, filename)
         pass
     contract=models.ForeignKey(Contract, on_delete=models.CASCADE, blank=True, null=True)
     file=models.FileField(upload_to=contract_files_path)
