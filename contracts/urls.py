@@ -19,7 +19,10 @@ from django.urls import include, path
 from contracts import views 
 
 urlpatterns = [
-    path('', views.contract),
-    path('connect/', views.connect)
+    path('', views.index),
+    path('connect/', views.connect),
+    path('contracts/', views.contracts),
+    path('contract/', views.contract)
     
 ]
+ 
