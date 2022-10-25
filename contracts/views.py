@@ -18,8 +18,9 @@ def contracts(request):
     context=Contract.contracts_context()
     return render(request, 'contracts/contracts.html', context)
 
-def contract(request):
-    return render(request, 'contracts/contract.html')
+def contract(request, pk):
+    context=Contract.contract_context(pk)
+    return render(request, 'contracts/contract.html', {'contract': context})
 
 def connect(request):
     print("LN Node Connected!")

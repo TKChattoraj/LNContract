@@ -22,7 +22,7 @@ urlpatterns = [
     path('', views.index),
     path('connect/', views.connect),
     path('contracts/', views.contracts),
-    path('contract/', views.contract)
+    path('<int:pk>', views.contract)
     
 ]
  

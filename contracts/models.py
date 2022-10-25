@@ -1,5 +1,6 @@
 from django.db import models
-
+from itertools import chain  #used to combine the QuerySets
+import operator 
 # Create your models here.
 
 class LN_Node(models.Model):
@@ -12,6 +13,18 @@ class LN_Node(models.Model):
     tls_path=models.FileField(upload_to=ln_node_dir)    
     macaroon_path=models.FileField(upload_to=ln_node_dir)
     status=models.CharField(max_length=50, blank=True, null=True)
+
+def get_parties(c):
+    es=c.entity_set.all()
+    if es.filter(party=True):
+        p=es.filter(party=True)[0] #grab the first party
+    else:
+        p=None
+    if es.filter(party=False):
+        cp=es.filter(party=False)[0] #grab the first counteparty
+    else:
+        cp=None
+    return((p,cp))   
 
 class Contract(models.Model):
     contract_no=models.CharField(max_length=20)
@@ -36,10 +49,21 @@ class Contract(models.Model):
                 cp=None 
             contracts.append((c, p, cp))
         print(contracts)
-        
         context={'contracts': contracts}
-
         return context
+
+    def contract_context(pk):
+        contract=[]
+        c=Contract.objects.get(pk=pk)
+        p, cp = get_parties(c)
+        sogs=c.saleofgood_set.all()  #grab all the sale of good items for this contract
+        soss=c.saleofservice_set.all() #grab all the sale of service items
+        mos=c.monetaryobligation_set.all() # all the monetary obligations
+        obl_sorted=sorted(chain(sogs, soss, mos), key=operator.attrgetter('due_date'))
+        context=(c, p, cp, obl_sorted)
+        return context
+        
+
 
 class Entity(models.Model):
     name=models.CharField(max_length=20)

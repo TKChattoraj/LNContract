@@ -3,8 +3,13 @@
 {% block main %}
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div>
+        
+
+
+      </div>
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard</h1>
+        <h1 class="h2">Dashboard:  Contract No: {{contract.0.contract_no}}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -24,13 +29,13 @@
           <div class="card" style="width: 36rem;">
             
             <div class="card-body">
-              <h5 class="card-title">Party</h5>
+              <h5 class="card-title">{{contract.1.name}}</h5>
               <div class="table-responsive">
                 <table class="table table-striped table-sm">
                   <tbody>
                     <tr>
                       <td>LN Node</td>
-                      <td>Status:  Not Connected</td>
+                      <td>Status:  {{contract.1.ln_node.pk}}</td>
                       <td><a href="/contracts/connect/" class="btn btn-primary">Connect</a></td>
                     </tr>                   
                   </tbody>
@@ -45,13 +50,13 @@
           <div class="card" style="width: 36rem;">
             
             <div class="card-body">
-              <h5 class="card-title">Counterparty</h5>
+              <h5 class="card-title">{{contract.2.name}}</h5>
               <div class="table-responsive">
                 <table class="table table-striped table-sm">
                   <tbody>
                     <tr>
                       <td>LN Node</td>
-                      <td>Status:  Not Connected</td>
+                      <td>Status:  {{contract.2.ln_node.pk</td>
                       <td><a href="#" class="btn btn-primary">Connect</a></td>
                     </tr>                   
                   </tbody>
@@ -64,6 +69,7 @@
         </div>
       </div>
 
+      {{contract.3.0.due_date}}
       
 
       <h2>Contract Obligations</h2>
@@ -80,47 +86,17 @@
             </tr>
           </thead>
           <tbody>
+          {% for ob in contract.3 %} 
             <tr>
-              <td>1,001</td>
-              <td>random</td>
-              <td>data</td>
-              <td>placeholder</td>
-              <td>text</td>
+              <td>{{forloop.counter}}</td>
+              <td>{{ob.description}}</td>
+              <td>{{ob.entity.name}}</td>
+              <td>{{ob.due_date}}</td>
+              <td>t{{ob.status}}</td>
               <td>button</td>
             </tr>
-            <tr>
-              <td>1,002</td>
-              <td>placeholder</td>
-              <td>irrelevant</td>
-              <td>visual</td>
-              <td>layout</td>
-              <td>button</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>data</td>
-              <td>rich</td>
-              <td>dashboard</td>
-              <td>tabular</td>
-              <td>button</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>information</td>
-              <td>placeholder</td>
-              <td>illustrative</td>
-              <td>data</td>
-              <td>button</td>
-            </tr>
-            <tr>
-              <td>1,004</td>
-              <td>text</td>
-              <td>random</td>
-              <td>layout</td>
-              <td>dashboard</td>
-              <td>button</td>
-            </tr>
-            
+
+          {% endfor %}          
           </tbody>
         </table>
       </div>
