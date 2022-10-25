@@ -18,6 +18,29 @@ class Contract(models.Model):
     description=models.CharField(max_length=100, blank=True, null=True)
     status=models.CharField(max_length=100, blank=True, null=True)
 
+    def contracts_context():
+        cs=Contract.objects.all()
+        contracts=[]
+      
+        for c in cs:         
+            es=c.entity_set.all()
+            print(es)
+            if es.filter(party=True):
+                p=es.filter(party=True)[0] #grab the first party
+            else:
+                p=None
+            print(p)
+            if es.filter(party=False):
+                cp=es.filter(party=False)[0] #grab the first counteparty
+            else:
+                cp=None 
+            contracts.append((c, p, cp))
+        print(contracts)
+        
+        context={'contracts': contracts}
+
+        return context
+
 class Entity(models.Model):
     name=models.CharField(max_length=20)
     ln_node=models.ForeignKey(LN_Node, on_delete=models.CASCADE, blank=True, null=True)
