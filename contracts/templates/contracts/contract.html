@@ -1,13 +1,10 @@
 
 {% extends "contracts/base.html" %} 
 {% block main %}
-
+<!--  the context=(c, p, cp, obl_sorted). contract, entity-party, entity-counterparty, list of obligations-mixture of sale of goods, services montetary obligations
+-->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div>
-        
 
-
-      </div>
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Dashboard:  Contract No: {{contract.0.contract_no}}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
@@ -36,7 +33,7 @@
                     <tr>
                       <td>LN Node</td>
                       <td>Status:  {{contract.1.ln_node.pk}}</td>
-                      <td><a href="/contracts/connect/" class="btn btn-primary">Connect</a></td>
+                      <td><a href="/contracts/connect/{{contract.1.pk}}" class="btn btn-sm btn-primary">Connect</a></td>
                     </tr>                   
                   </tbody>
                 </table>
@@ -57,7 +54,7 @@
                     <tr>
                       <td>LN Node</td>
                       <td>Status:  {{contract.2.ln_node.pk</td>
-                      <td><a href="#" class="btn btn-primary">Connect</a></td>
+                      <td><a href="#" class="btn btn-sm btn-primary">Connect</a></td>
                     </tr>                   
                   </tbody>
                 </table>

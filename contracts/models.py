@@ -1,6 +1,8 @@
 from django.db import models
 from itertools import chain  #used to combine the QuerySets
 import operator 
+
+
 # Create your models here.
 
 class LN_Node(models.Model):
