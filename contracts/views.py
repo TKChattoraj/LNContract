@@ -1,3 +1,5 @@
+import sys
+
 from django.shortcuts import render
 from contracts.models import (
     LN_Node,
@@ -11,6 +13,8 @@ from contracts.models import (
     ContractText
 )
 
+from contracts.nodes.connect_ln_node import connect_ln_node
+
 def index(request):
     return render(request, 'contracts/index.html')
 
@@ -23,5 +27,6 @@ def contract(request, pk):
     return render(request, 'contracts/contract.html', {'contract': context})
 
 def connect(request, pk):
-    print("LN Node Connected!")
-    return render(request, 'contracts/ln_node_connect.html')
+    print(f'LN Node Connected! Party: {pk}')
+    connect_ln_node(pk)
+    return render(request, 'contracts/ln_node_connect.html', {'connect': pk})
