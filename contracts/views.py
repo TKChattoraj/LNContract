@@ -13,7 +13,7 @@ from contracts.models import (
     ContractText
 )
 
-from contracts.nodes.connect_ln_node import connect_ln_node
+from contracts.nodes.connect_ln_node import connect_ln_node, LNConnection
 
 def index(request):
     return render(request, 'contracts/index.html')
@@ -28,5 +28,6 @@ def contract(request, pk):
 
 def connect(request, pk):
     print(f'LN Node Connected! Party: {pk}')
-    connect_ln_node(pk)
-    return render(request, 'contracts/ln_node_connect.html', {'connect': pk})
+    ln_connection=LNConnection()
+    response=connect_ln_node(pk)
+    return render(request, 'contracts/ln_node_connect.html', {'connect': response})

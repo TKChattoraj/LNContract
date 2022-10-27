@@ -94,17 +94,15 @@ class LNConnection():
         )
         response=self.stub.OpenChannel(request)
         return response
-
-        
-def connect_ln_node(pk):
-
+def ln_stub():
+    
     ##########################################################################
 
 
     # # Due to updated ECDSA generated tls.cert we need to let gprc know that
     # # we need to use that cipher suite otherwise there will be a handhsake
     # # error when we communicate with the lnd rpc server.
-    # os.environ["GRPC_SSL_CIPHER_SUITES"] = 'HIGH+ECDSA'
+    os.environ["GRPC_SSL_CIPHER_SUITES"] = 'HIGH+ECDSA'
 
 
     # # Connect to Alice
@@ -153,17 +151,25 @@ def connect_ln_node(pk):
     # # stub gives the location and port the ln node controlled by the party (Alice) is listening to
     # # and gives the authorization credentials--the macaroon.
     # # It is the basis of every communication to the LN node.  
-    stub = lnrpc.LightningStub(channel)
+    stub = lnrpc.LightningStub(channel)  
+    return stub
 
-
+def wallet_balance(stub):
     # # Retrieve and display the wallet balance.
-    response = stub.WalletBalance(ln.WalletBalanceRequest())
-    print(response.total_balance)
+    balance = stub.WalletBalance(ln.WalletBalanceRequest())
+    print(balance.total_balance)
+    return(balance)
 
-
+def wallet_info(stub):
     # # # Get Info of node.
     request = ln.GetInfoRequest()
-    response = stub.GetInfo(request)
-    print(response)
+    info = stub.GetInfo(request)
+    print(info)
+    return(info)
 
+def connect_ln_node(pk): 
+    stub=ln_stub()
+    balance=wallet_balance(stub)
+    info=wallet_info(stub)
     print("Connected to my LN Node!")
+    return (balance, info)
