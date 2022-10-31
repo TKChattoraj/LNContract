@@ -37,4 +37,7 @@ def connect(request, pk):
 def connect_cp(request, pk):
     print(f'Connecting to Counterparty {pk} LN Node')
     connect_cp=connect_cp_ln_node(pk)
-    return render(request, 'contracts/ln_node_connect.html', {'context':context})
+    context={'connect_cp':connect_cp}
+    print("Connected to counterparty")
+    print(context['connect_cp'])
+    return render(request, 'contracts/ln_node_connect_cp.html', {'context':context})

@@ -181,7 +181,7 @@ def connect_cp_ln_node(pk): # pk parameter is the counterparty's entity id.
     # P2P Internal:172.18.0.3:9735  p2p internal works, but GRPC Host retruns a connection refused. 
     '''
     lncli listpeers or the listpeers grpc shows the peers' address as the P2P Internal one.  Maybe will need to do a list peers, sort out the address and the pub-eky before making a connection or etc?
-    
+
     ''' 
 
     print('#################################################################################################')
@@ -206,4 +206,5 @@ def connect_cp_ln_node(pk): # pk parameter is the counterparty's entity id.
     print("List Peers")
     print(list_peers)
     print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+    return connect_peer
     
