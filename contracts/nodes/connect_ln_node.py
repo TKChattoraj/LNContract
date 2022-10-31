@@ -173,3 +173,37 @@ def connect_ln_node(pk):
     info=wallet_info(stub)
     print("Connected to my LN Node!")
     return (balance, info)
+
+def connect_cp_ln_node(pk): # pk parameter is the counterparty's entity id.
+    stub=ln_stub()
+    # Public Key of counterparty (Dave): 031c43195c2aa38d186cc8194f30756e88fc2b65fd9adaeed25f0dfe1b6663d383
+    # Host of counterparty:  127.0.0.1:10004
+    # P2P Internal:172.18.0.3:9735  p2p internal works, but GRPC Host retruns a connection refused. 
+    '''
+    lncli listpeers or the listpeers grpc shows the peers' address as the P2P Internal one.  Maybe will need to do a list peers, sort out the address and the pub-eky before making a connection or etc?
+    
+    ''' 
+
+    print('#################################################################################################')
+    lpr=ln.ListPeersRequest()
+    list_peers=stub.ListPeers(lpr)
+    print("List Peers")
+    print(list_peers)
+
+    
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    address=ln.LightningAddress(pubkey='031c43195c2aa38d186cc8194f30756e88fc2b65fd9adaeed25f0dfe1b6663d383', host='172.18.0.3:9735')
+    connect_to_peer_request=ln.ConnectPeerRequest(addr=address, timeout=10)
+    connect_peer=stub.ConnectPeer(connect_to_peer_request)
+    print("Connect to peer")
+    print(connect_peer)
+
+    print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+
+    
+    lpr=ln.ListPeersRequest()
+    list_peers=stub.ListPeers(lpr)
+    print("List Peers")
+    print(list_peers)
+    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+    

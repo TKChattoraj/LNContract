@@ -13,7 +13,7 @@ from contracts.models import (
     ContractText
 )
 
-from contracts.nodes.connect_ln_node import connect_ln_node, LNConnection
+from contracts.nodes.connect_ln_node import connect_ln_node, LNConnection, connect_cp_ln_node
 
 def index(request):
     return render(request, 'contracts/index.html')
@@ -24,10 +24,17 @@ def contracts(request):
 
 def contract(request, pk):
     context=Contract.contract_context(pk)
-    return render(request, 'contracts/contract.html', {'contract': context})
+    return render(request, 'contracts/contract_initial.html', {'contract': context})
 
 def connect(request, pk):
-    print(f'LN Node Connected! Party: {pk}')
-    ln_connection=LNConnection()
-    response=connect_ln_node(pk)
-    return render(request, 'contracts/ln_node_connect.html', {'connect': response})
+    print(f'Connectin to Party {pk} LN Node.')
+    #ln_connection=LNConnection()
+    contract=Contract.contract_context(pk)
+    connect=connect_ln_node(pk)
+    context={'contract':contract, 'connect':connect}
+    return render(request, 'contracts/ln_node_connect.html', {'context':context})
+
+def connect_cp(request, pk):
+    print(f'Connecting to Counterparty {pk} LN Node')
+    connect_cp=connect_cp_ln_node(pk)
+    return render(request, 'contracts/ln_node_connect.html', {'context':context})

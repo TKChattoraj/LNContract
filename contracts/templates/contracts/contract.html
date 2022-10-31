@@ -1,12 +1,16 @@
 
 {% extends "contracts/base.html" %} 
 {% block main %}
-<!--  the context=(c, p, cp, obl_sorted). contract, entity-party, entity-counterparty, list of obligations-mixture of sale of goods, services montetary obligations
+
+<!--
+the context is  {'contract':contract, 'connect':connect}
+the 'contract'=(c, p, cp, obl_sorted) with contract, entity-party, entity-counterparty, list of obligations-mixture of sale of goods, services montetary obligations
+the 'connect'=(balance, info) with (balance response object, info response object), where the response object is the response from the calls to the ln node 
 -->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard:  Contract No: {{contract.0.contract_no}}</h1>
+        <h1 class="h2">Dashboard:  Contract No: {{context.contract.0.contract_no}}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -26,15 +30,13 @@
           <div class="card" style="width: 36rem;">
             
             <div class="card-body">
-              <h5 class="card-title">{{contract.1.name}}</h5>
+              <h5 class="card-title">{{context.contract.1.name}}</h5>
               <div class="table-responsive">
                 <table class="table table-striped table-sm">
                   <tbody>
-                    <tr>
-                      <td>LN Node</td>
-                      <td>Status:  {{contract.1.ln_node.pk}}</td>
-                      <td><a href="/contracts/connect/{{contract.1.pk}}" class="btn btn-sm btn-primary">Connect</a></td>
-                    </tr>                   
+                      {% block party_ln %}
+        
+                      {% endblock %}                 
                   </tbody>
                 </table>
               </div>
@@ -47,13 +49,13 @@
           <div class="card" style="width: 36rem;">
             
             <div class="card-body">
-              <h5 class="card-title">{{contract.2.name}}</h5>
+              <h5 class="card-title">{{context.contract.2.name}}</h5>
               <div class="table-responsive">
                 <table class="table table-striped table-sm">
                   <tbody>
                     <tr>
                       <td>LN Node</td>
-                      <td>Status:  {{contract.2.ln_node.pk</td>
+                      <td>Status:  {{context.contract.2.ln_node.pk</td>
                       <td><a href="#" class="btn btn-sm btn-primary">Connect</a></td>
                     </tr>                   
                   </tbody>
@@ -83,7 +85,7 @@
             </tr>
           </thead>
           <tbody>
-          {% for ob in contract.3 %} 
+          {% for ob in context.contract.3 %} 
             <tr>
               <td>{{forloop.counter}}</td>
               <td>{{ob.description}}</td>

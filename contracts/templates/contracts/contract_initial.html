@@ -1,0 +1,16 @@
+
+{% extends "contracts/contract.html" %} 
+{% block party_ln %}
+<!--
+the context is  {'contract':contract, 'connect':connect}
+the 'contract'=(c, p, cp, obl_sorted) with contract, entity-party, entity-counterparty, list of obligations-mixture of sale of goods, services montetary obligations
+the 'connect'=(balance, info) with (balance response object, info response object), where the response object is the response from the calls to the ln node 
+-->
+                    <tr>
+                      <td>LN Node</td>
+                      <td>Status:  {{contract.1.ln_node.pk}}</td>
+                      <td><a href="/contracts/connect/{{contract.1.pk}}" class="btn btn-sm btn-primary">Connect</a></td>
+                    </tr>                   
+
+              
+ {% endblock %}
