@@ -1,9 +1,17 @@
 {% extends "contracts/base.html" %}
 {% block main %}
 
+
+<!--
+
+context={'index':______, 'contracts': [(contract object, entity object, entity object)]}}
+
+access the data by referring to the context key.  In this case, contracts, is a list of tupples show above.
+
+-->
+
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <h2>Contract</h2>
-        
         <div class="table-responsive">
           <table class="table table-striped table-sm">
             <thead>
@@ -19,14 +27,10 @@
             </thead>
             <tbody>
               {% for t in contracts %} <!-- do for each tuple (contract, party, counterparty) in contracts-->
-        
               <tr>
                 <td>{{t.0.contract_no}}</td>
-                <td>{{t.0.description}}</td>
-                
-               
-                <td>{{t.1.name}}</td>   
-                
+                <td>{{t.0.description}}</td> 
+                <td>{{t.1.name}}</td>                   
                 <td>{{t.2.name}}</td>  
                 <td>{{t.0.status}}</td>
                 <td scope="col">

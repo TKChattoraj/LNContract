@@ -33,7 +33,7 @@ class Contract(models.Model):
     description=models.CharField(max_length=100, blank=True, null=True)
     status=models.CharField(max_length=100, blank=True, null=True)
 
-    def contracts_context():
+    def contracts_context_data():
         cs=Contract.objects.all()
         contracts=[]
       
@@ -52,9 +52,10 @@ class Contract(models.Model):
             contracts.append((c, p, cp))
         print(contracts)
         context={'contracts': contracts}
-        return context
+        context_data=contracts
+        return context_data
 
-    def contract_context(pk):
+    def contract_context_data(pk):
         contract=[]
         c=Contract.objects.get(pk=pk)
         p, cp = get_parties(c)
@@ -62,8 +63,8 @@ class Contract(models.Model):
         soss=c.saleofservice_set.all() #grab all the sale of service items
         mos=c.monetaryobligation_set.all() # all the monetary obligations
         obl_sorted=sorted(chain(sogs, soss, mos), key=operator.attrgetter('due_date'))
-        context=(c, p, cp, obl_sorted)
-        return context
+        context_data=(c, p, cp, obl_sorted)
+        return context_data
         
 
 

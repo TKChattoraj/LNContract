@@ -196,7 +196,7 @@ def connect_cp_ln_node(pk): # pk parameter is the counterparty's entity id.
     connect_to_peer_request=ln.ConnectPeerRequest(addr=address, timeout=10)
     connect_peer=stub.ConnectPeer(connect_to_peer_request)
     print("Connect to peer")
-    print(connect_peer)
+    print(connect_peer)  #  a successful response is None
 
     print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
