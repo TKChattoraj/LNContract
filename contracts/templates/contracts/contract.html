@@ -10,7 +10,7 @@ the 'connect'=(balance, info) with (balance response object, info response objec
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard:  Contract No: {{context.contract.0.contract_no}}</h1>
+        <h1 class="h2">Dashboard:  Contract No: {{contract.0.contract_no}}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -30,7 +30,7 @@ the 'connect'=(balance, info) with (balance response object, info response objec
           <div class="card" style="width: 36rem;">
             
             <div class="card-body">
-              <h5 class="card-title">{{context.contract.1.name}}</h5>
+              <h5 class="card-title">{{contract.1.name}}</h5>
               <div class="table-responsive">
                 <table class="table table-striped table-sm">
                   <tbody>
@@ -49,13 +49,13 @@ the 'connect'=(balance, info) with (balance response object, info response objec
           <div class="card" style="width: 36rem;">
             
             <div class="card-body">
-              <h5 class="card-title">{{context.contract.2.name}}</h5>
+              <h5 class="card-title">{{contract.2.name}}</h5>
               <div class="table-responsive">
                 <table class="table table-striped table-sm">
                   <tbody>
                     <tr>
                       <td>LN Node</td>
-                      <td>Status:  {{context.contract.2.ln_node.pk</td>
+                      <td>Status:  {{contract.2.ln_node.pk}}</td>
                       <td><a href="#" class="btn btn-sm btn-primary">Connect</a></td>
                     </tr>                   
                   </tbody>
@@ -68,9 +68,7 @@ the 'connect'=(balance, info) with (balance response object, info response objec
         </div>
       </div>
 
-      {{contract.3.0.due_date}}
-      
-
+  
       <h2>Contract Obligations</h2>
       <div class="table-responsive">
         <table class="table table-striped table-sm">
@@ -78,6 +76,7 @@ the 'connect'=(balance, info) with (balance response object, info response objec
             <tr>
               <th scope="col">#</th>
               <th scope="col">Contract Milestone</th>
+              <th scope="col">Quantity/Amount</th>
               <th scope="col">Obligor</th>
               <th scope="col">Due</th>
               <th scope="col">Status</th>
@@ -85,10 +84,27 @@ the 'connect'=(balance, info) with (balance response object, info response objec
             </tr>
           </thead>
           <tbody>
-          {% for ob in context.contract.3 %} 
+          {% for ob in contract.3 %} 
             <tr>
               <td>{{forloop.counter}}</td>
-              <td>{{ob.description}}</td>
+              
+              {% if ob.amount %} 
+                <td> Monetary Payment</td>
+              {% elif ob.description %} 
+                <td>{{ob.description}}</td>              
+              {% else %} 
+                <td>TBD</td>
+              {% endif %}
+
+
+              {% if ob.amount %}
+                <td>{{ob.amount}} {{ob.unit}}</td>
+              {% elif ob.quantity %}
+                <td>{{ob.quantity}}</td>
+              {% else %}  
+                <td>TBD</td>
+              {% endif %}
+              
               <td>{{ob.entity.name}}</td>
               <td>{{ob.due_date}}</td>
               <td>t{{ob.status}}</td>

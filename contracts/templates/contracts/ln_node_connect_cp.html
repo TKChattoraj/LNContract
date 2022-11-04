@@ -1,5 +1,29 @@
-{% extends "contracts/base.html" %} 
-{% block main %}
-<p>{{context.connect_cp}}</p>
+<!--
+the context is  {'contract':contract, 'connect':connect}
+the 'contract'=(c, p, cp, obl_sorted) with contract, entity-party, entity-counterparty, list of obligations-mixture of sale of goods, services montetary obligations
+the 'connect'=(balance, info) with (balance response object, info response object), where the response object is the response from the calls to the ln node 
+-->
 
-{% endblock %} 
+
+{% extends "contracts/contract.html" %} 
+{% block party_ln %}
+
+    <tr>
+        <td>LN Node:</td>
+    </tr>
+    <tr>
+        <td>Balance:  {{connect.0.total_balance}}</td>
+    </tr>        
+        <td>Public Key:  {{connect.1.identity_pubkey}}</td>
+    </tr>
+    <tr>
+        <td>Connected to Peer</td>
+    </tr>
+    <tr>
+        <td>
+            <a href="/contracts/disconnect_cp/{{contract.2.pk}}" class="btn btn-sm btn-primary">Open Channel</a>
+            <a href="/contracts/disconnect_cp/{{contract.2.pk}}" class="btn btn-sm btn-primary">Disconnect Counterparty</a>
+        </td>
+    </tr> 
+   
+{% endblock %}

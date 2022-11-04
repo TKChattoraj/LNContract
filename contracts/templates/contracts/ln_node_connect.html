@@ -12,12 +12,13 @@ the 'connect'=(balance, info) with (balance response object, info response objec
         <td>LN Node:</td>
     </tr>
     <tr>
-        <td>Balance:  {{context.connect.0.total_balance}}</td>
+        <td>Balance:  {{connect.0.total_balance}}</td>
     </tr>        
-        <td>Public Key:  {{context.connect.1.identity_pubkey}}</td>
+        <td>Public Key:  {{connect.1.identity_pubkey}}</td>
     </tr>
+    
     <tr>
-        <td><a href="/contracts/connect_cp/{{context.contract.2.pk}}" class="btn btn-sm btn-primary">Connect Counterparty</a></td>
+        <td><a href="/contracts/connect_cp/{{contract.2.pk}}" class="btn btn-sm btn-primary">Connect Counterparty</a></td>
     </tr> 
    
 {% endblock %}

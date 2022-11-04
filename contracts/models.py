@@ -1,6 +1,7 @@
 from django.db import models
 from itertools import chain  #used to combine the QuerySets
 import operator 
+from django.core import serializers
 
 
 # Create your models here.
@@ -39,32 +40,22 @@ class Contract(models.Model):
       
         for c in cs:         
             es=c.entity_set.all()
-            print(es)
             if es.filter(party=True):
-                p=es.filter(party=True)[0] #grab the first party
-            else:
-                p=None
-            print(p)
+                p=es.filter(party=True)[0] #grab the first party or the Null Party if none.
             if es.filter(party=False):
-                cp=es.filter(party=False)[0] #grab the first counteparty
-            else:
-                cp=None 
-            contracts.append((c, p, cp))
-        print(contracts)
-        context={'contracts': contracts}
-        context_data=contracts
-        return context_data
+                cp=es.filter(party=False)[0] #grab the first counteparty or the Null Counterparty if none.
+            contracts.append((c, p, cp))       
+        return contracts # list of tuples containing contract data
 
     def contract_context_data(pk):
-        contract=[]
         c=Contract.objects.get(pk=pk)
         p, cp = get_parties(c)
         sogs=c.saleofgood_set.all()  #grab all the sale of good items for this contract
         soss=c.saleofservice_set.all() #grab all the sale of service items
         mos=c.monetaryobligation_set.all() # all the monetary obligations
         obl_sorted=sorted(chain(sogs, soss, mos), key=operator.attrgetter('due_date'))
-        context_data=(c, p, cp, obl_sorted)
-        return context_data
+        contract_data=(c, p, cp, obl_sorted)
+        return contract_data
         
 
 
@@ -92,6 +83,7 @@ class MonetaryObligation(models.Model):
     ('$', 'Dollar')
     ]   
     contract=models.ForeignKey(Contract, on_delete=models.CASCADE, blank=True, null=True)
+    entity=models.ForeignKey(Entity, on_delete=models.CASCADE, blank=True, null=True)
     amount=models.BigIntegerField(blank=True, null=True)
     unit=models.CharField(max_length=4, choices=MONETARY_UNITS)
     due_date=models.DateField()
