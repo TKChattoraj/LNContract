@@ -57,7 +57,7 @@ class LNConnection():
         # It is the basis of every communication to the LN node.  
         self.stub = lnrpc.LightningStub(channel)
 
-        self.get_node_info()
+        #self.get_node_info()
     
 
     # Metadata callback
@@ -71,16 +71,29 @@ class LNConnection():
         response = self.stub.GetInfo(request)
         return response
 
+    # # Retrieve and display the wallet balance.
+    def wallet_balance(self):  
+        balance = self.stub.WalletBalance(ln.WalletBalanceRequest())
+        return(balance)
 
     # Get Wallet info
     def get_wallet_info(self):
         request = ln.WalletBalanceRequest()
         response = self.stub.WalletBalance(request)
         return response
-        
+
+    def list_peers(self):
+        request=ln.ListPeersRequest()
+        response=self.stub.ListPeers(request)
+        return response     
+
+    def connect_peer(self, pubkey, host):
+        address=ln.LightningAddress(pubkey=pubkey, host=host)
+        request=ln.ConnectPeerRequest(addr=address, timeout=10)
+        response=self.stub.ConnectPeer(request)
 
     # Open Channel to Bob
-    def open_channel(self, node_pubkey, amount):
+    def open_channel(self, node_pubkey, amount):  #amount is in satoshis
         # Will want Bob to send his node_pubkye to Alice
         # Assume for now that Alice knows Bob's pubkey
         # node_pubkey= "02647163e26eeedac4b9cba10d821ab06583f95d3fea1be411d2718ddf94578012"
@@ -94,6 +107,7 @@ class LNConnection():
         )
         response=self.stub.OpenChannel(request)
         return response
+
 def ln_stub():
     
     ##########################################################################
@@ -168,43 +182,60 @@ def wallet_info(stub):
     return(info)
 
 def connect_ln_node(pk): 
-    stub=ln_stub()
-    balance=wallet_balance(stub)
-    info=wallet_info(stub)
+    tls_cert='/home/tarun/.polar/networks/1/volumes/lnd/alice/tls.cert'
+    admin_mac_path='/home/tarun/.polar/networks/1/volumes/lnd/alice/data/chain/bitcoin/regtest/admin.macaroon'
+    grpc_location='127.0.0.1:10001'
+    ln_connection=LNConnection(tls_cert, admin_mac_path, grpc_location)
+    balance=ln_connection.wallet_balance()
+    info=ln_connection.get_node_info()
+    # stub=ln_stub()
+    # balance=wallet_balance(stub)
+    # info=wallet_info(stub)
     print("Connected to my LN Node!")
     return (balance, info)
 
-def connect_cp_ln_node(pk): # pk parameter is the counterparty's entity id.
-    stub=ln_stub()
-    # Public Key of counterparty (Dave): 031c43195c2aa38d186cc8194f30756e88fc2b65fd9adaeed25f0dfe1b6663d383
-    # Host of counterparty:  127.0.0.1:10004
-    # P2P Internal:172.18.0.3:9735  p2p internal works, but GRPC Host retruns a connection refused. 
-    '''
-    lncli listpeers or the listpeers grpc shows the peers' address as the P2P Internal one.  Maybe will need to do a list peers, sort out the address and the pub-eky before making a connection or etc?
-
-    ''' 
+def connect_cp_ln_node(pk, lnc): # pk parameter is the counterparty's entity id.
+    
 
     print('#################################################################################################')
-    lpr=ln.ListPeersRequest()
-    list_peers=stub.ListPeers(lpr)
+    peers_before=lnc.list_peers()
     print("List Peers")
-    print(list_peers)
-
-    
+    print(peers_before)
+ 
     print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    address=ln.LightningAddress(pubkey='031c43195c2aa38d186cc8194f30756e88fc2b65fd9adaeed25f0dfe1b6663d383', host='172.18.0.3:9735')
-    connect_to_peer_request=ln.ConnectPeerRequest(addr=address, timeout=10)
-    connect_peer=stub.ConnectPeer(connect_to_peer_request)
+
+    connect_peer=lnc.connect_peer(pubkey='031c43195c2aa38d186cc8194f30756e88fc2b65fd9adaeed25f0dfe1b6663d383', host='172.18.0.3:9735')
     print("Connect to peer")
     print(connect_peer)  #  a successful response is None
 
     print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
     
-    lpr=ln.ListPeersRequest()
-    list_peers=stub.ListPeers(lpr)
+    peers_after=lnc.list_peers()
     print("List Peers")
-    print(list_peers)
+    print(peers_after)
     print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-    return connect_peer
+
+    # will build logic that if peer is not in peers_before but is in peers_after than return True else return False.
+    return True
     
+def channel_open(lnc, pk):#pk is the counterparty pk
+    # some logic to get the counterparty node pubkey from the counterparty pk
+    pubkey='031c43195c2aa38d186cc8194f30756e88fc2b65fd9adaeed25f0dfe1b6663d383'
+    amount=200000  # will need to get this from the obligation amount--so the obligation will need to pass from the template to the view to here.  In Satoshis
+    responses=lnc.open_channel(pubkey, amount)
+    print("&&&&&&&&&&&&&&&&& Channel Open &&&&&&&&&&&&&&&&&&&&&&")
+    print(responses)
+    for  response in responses:
+        print(response)
+        # print("Received message %s at %s" %
+        #       (response.message, response.location))
+    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    return responses
+
+
+
+tls_cert='/home/tarun/.polar/networks/1/volumes/lnd/alice/tls.cert'
+admin_mac_path='/home/tarun/.polar/networks/1/volumes/lnd/alice/data/chain/bitcoin/regtest/admin.macaroon'
+grpc_location='127.0.0.1:10001'
+lnc=LNConnection(tls_cert, admin_mac_path, grpc_location)

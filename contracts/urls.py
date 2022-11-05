@@ -23,7 +23,8 @@ urlpatterns = [
     path('connect/<int:pk>', views.connect),
     path('connect_cp/<int:pk>',views.connect_cp),
     path('contracts/', views.contracts),
-    path('<int:pk>', views.contract)
+    path('<int:pk>', views.contract),
+    path('open_channel/<int:pk>', views.open_channel)
     
 ]
  

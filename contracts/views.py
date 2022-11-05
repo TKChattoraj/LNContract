@@ -3,6 +3,7 @@ import sys
 from django.shortcuts import render
 from django.template import Context
 from django.core import serializers
+from contracts.andytest import b
 
 from contracts.models import (
     LN_Node,
@@ -16,13 +17,21 @@ from contracts.models import (
     ContractText
 )
 
-from contracts.nodes.connect_ln_node import connect_ln_node, LNConnection, connect_cp_ln_node
+from contracts.nodes.connect_ln_node import connect_ln_node, LNConnection, connect_cp_ln_node, channel_open, lnc
+
+
+
 
 def index(request):
+    print("&&&&&&&&&&&&&&&&&&&&&&7")
+    print(b.a)
+    b.change(2)
     request.session['context']={}
     return render(request, 'contracts/index.html')
 
 def contracts(request):
+    print("******************")
+    print(b.a)
     contracts=Contract.contracts_context_data()  # list of tuples (contract, entity, entity)  
     context={'contracts': contracts} 
     return render(request, 'contracts/contracts.html', context)
@@ -37,7 +46,6 @@ def contract(request, pk):
 
 def connect(request, pk):
     print(f'Connection to Party {pk} LN Node.')
-    #ln_connection=LNConnection()
     contract=Contract.contract_context_data(pk)
     connect=connect_ln_node(pk) # tuple: (balance, info)
     context={'contract':contract, 'connect':connect}
@@ -45,20 +53,18 @@ def connect(request, pk):
 
 def connect_cp(request, pk):
     print(f'Connecting to Counterparty {pk} LN Node')
-    # needs revision:  pk from the parameter is the pk for the counterparty
-    # but pk for contract_context needs to be the contract pk
-    # and pk for the connect_ln_node needs to be the pk for the party
     contract=Contract.contract_context_data(request.session['contract'])  
     connect=connect_ln_node(request.session['party']) # tuple: (balance, info)
-
-    #
-    #
-    #
-    connect_cp=connect_cp_ln_node(pk)
+    connect_cp=connect_cp_ln_node(pk, lnc) #directing the Party ln node to connect with the counterparty ln node
     context={'contract':contract, 'connect':connect,'connect_cp':connect_cp}
     print("Connected to counterparty")
     print(context['connect_cp'])
     return render(request, 'contracts/ln_node_connect_cp.html', context)
+
+def open_channel(request, pk):
+    channel=channel_open(lnc, pk)
+    context={'channel': channel}
+    return render(request, 'contracts/open_channel.html', context)
 
 def serialize_list(l):
     print("in serialize")
