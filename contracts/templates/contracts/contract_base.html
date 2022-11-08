@@ -1,0 +1,141 @@
+
+{% extends "contracts/base.html" %} 
+{% block main %}
+
+<!--
+the context is  {'contract':contract_data, 'node':node_data}
+the 'contract'=(c, p, cp, obl_sorted) with contract, entity-party, entity-counterparty, list of obligations-mixture of sale of goods, services montetary obligations
+the 'node'=(balance, info) with (balance response object, info response object), where the response object is the response from the calls to the ln node 
+-->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard:  Contract No: {{contract.0.contract_no}}</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+            <span data-feather="calendar" class="align-text-bottom"></span>
+            This week
+          </button>
+        </div>
+      </div>
+
+      <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
+
+      <div class="row">
+        <div class="col-sm-6 col-md-6">
+          <div class="card" >
+            
+            <div class="card-body">
+              <h5 class="card-title">{{contract.1.name}}</h5>
+              <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                  <tbody>
+                      <tr><td>Info about the Party</td></tr>          
+                  </tbody>
+                </table>
+              </div>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-6">
+          <div class="card">
+            
+            <div class="card-body">
+              <h5 class="card-title">{{contract.2.name}}</h5>
+              <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                  <tbody>
+                    <tbody>
+                      <tr><td>Info about the Party</td></tr> 
+                  </tbody>
+                </table>
+              </div>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              
+            </div>
+          </div>    
+        </div>
+      </div>
+      
+      {% block party_ln_node %} 
+
+      {% endblock %}
+
+<!--
+      <div class="row">
+        <div class="col-sm-16 col-md-16">
+            <div class="card" >
+              <div class="card-body">
+                <h5 class="card-title">{{contract.1.name}} LN Node:</h5>
+                <div class="table-responsive">
+                  <table class="table table-striped table-sm">
+                    <tbody>
+                      <tr>
+                        <td>Status:  {{contract.2.ln_node.pk}}</td>
+                        <td><a href="#" class="btn btn-sm btn-primary">Connect</a></td>
+                      </tr>                            
+                    </tbody>
+                  </table>
+                </div>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>                  
+              </div>
+            </div>
+      </div>
+-->
+
+
+
+      <h2>Contract Obligations</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Contract Milestone</th>
+              <th scope="col">Quantity/Amount</th>
+              <th scope="col">Obligor</th>
+              <th scope="col">Due</th>
+              <th scope="col">Status</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for ob in contract.3 %} 
+            <tr>
+              <td>{{forloop.counter}}</td>
+              
+              {% if ob.amount %} 
+                <td> Monetary Payment</td>
+              {% elif ob.description %} 
+                <td>{{ob.description}}</td>              
+              {% else %} 
+                <td>TBD</td>
+              {% endif %}
+
+
+              {% if ob.amount %}
+                <td>{{ob.amount}} {{ob.unit}}</td>
+              {% elif ob.quantity %}
+                <td>{{ob.quantity}}</td>
+              {% else %}  
+                <td>TBD</td>
+              {% endif %}
+              
+              <td>{{ob.entity.name}}</td>
+              <td>{{ob.due_date}}</td>
+              <td>t{{ob.status}}</td>
+              <td>button</td>
+            </tr>
+
+          {% endfor %}          
+          </tbody>
+        </table>
+      </div>
+    </main>
+ {% endblock %}

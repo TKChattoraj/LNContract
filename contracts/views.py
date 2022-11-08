@@ -17,7 +17,9 @@ from contracts.models import (
     ContractText
 )
 
-from contracts.nodes.connect_ln_node import connect_ln_node, LNConnection, connect_cp_ln_node, channel_open, lnc
+
+
+from contracts.nodes.connect_ln_node import connect_ln_node, LNConnection, connect_cp_ln_node, channel_open, ln_node_info, lnc
 
 
 
@@ -41,30 +43,46 @@ def contract(request, pk):
     request.session['contract']=contract_data[0].pk
     request.session['party']=contract_data[1].pk
     request.session['counterparty']=contract_data[2].pk
-    context={'contract': contract_data}
-    return render(request, 'contracts/contract_initial.html', context)
+    node_data=ln_node_info(lnc) # tuple:  (balance, info, (connected, pub_key, address))
+    context={'contract': contract_data, 'node': node_data}
+    # if party's LN Node is connected to counterparty's node:
+    #  then display view included the counterparty node info
+    # else:  display view that includes button to connect to counterparty node
+    if node_data[2][0]:
+        return render(request, 'contracts/contract_connected.html', context)
+    else:
+        return render(request, 'contracts/contract_not_connected.html', context) 
+
 
 def connect(request, pk):
     print(f'Connection to Party {pk} LN Node.')
-    contract=Contract.contract_context_data(pk)
-    connect=connect_ln_node(pk) # tuple: (balance, info)
+    contract=Contract.contract_context_data(request.session['contract']) 
+    connect=connect_ln_node(pk) #pk is the party primary, key tuple: (balance, info) 
     context={'contract':contract, 'connect':connect}
     return render(request, 'contracts/ln_node_connect.html', context)
 
 def connect_cp(request, pk):
-    print(f'Connecting to Counterparty {pk} LN Node')
-    contract=Contract.contract_context_data(request.session['contract'])  
-    connect=connect_ln_node(request.session['party']) # tuple: (balance, info)
-    connect_cp=connect_cp_ln_node(pk, lnc) #directing the Party ln node to connect with the counterparty ln node
-    context={'contract':contract, 'connect':connect,'connect_cp':connect_cp}
-    print("Connected to counterparty")
-    print(context['connect_cp'])
-    return render(request, 'contracts/ln_node_connect_cp.html', context)
+    contract_data=Contract.contract_context_data(request.session['contract'])  
+
+    connect_cp=connect_cp_ln_node(pk, lnc) #directing the Party ln node to connect with the counterparty ln node.  returns a None if connected
+    print(f"connect_cp: {connect_cp}")
+    if  not connect_cp:
+        node_data=ln_node_info(lnc) # tuple:  (balance, info, (connected, address))
+    else:
+        pass
+    
+    context={'contract': contract_data, 'node': node_data}
+
+    return render(request, 'contracts/contract_connected.html', context)
 
 def open_channel(request, pk):
+    contract_data=Contract.contract_context_data(request.session['contract']) 
+    node_data=ln_node_info(lnc)
     channel=channel_open(lnc, pk)
-    context={'channel': channel}
-    return render(request, 'contracts/open_channel.html', context)
+    context={'contract': contract_data, 'node': node_data, 'channel': channel}
+    print("channel status:")
+    print(channel)
+    return render(request, 'contracts/channel_open.html', context)
 
 def serialize_list(l):
     print("in serialize")

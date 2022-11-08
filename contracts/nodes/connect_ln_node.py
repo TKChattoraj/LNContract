@@ -10,6 +10,8 @@ import os
 import subprocess
 import codecs
 
+from google.protobuf.json_format import MessageToDict
+
 #import kcomm_server as kcomm
 
 # Nd to attriubte bulk of this code to LND site?   
@@ -92,7 +94,7 @@ class LNConnection():
         request=ln.ConnectPeerRequest(addr=address, timeout=10)
         response=self.stub.ConnectPeer(request)
 
-    # Open Channel to Bob
+    # Open Channel to Dave
     def open_channel(self, node_pubkey, amount):  #amount is in satoshis
         # Will want Bob to send his node_pubkye to Alice
         # Assume for now that Alice knows Bob's pubkey
@@ -182,42 +184,56 @@ def wallet_info(stub):
     return(info)
 
 def connect_ln_node(pk): 
-    tls_cert='/home/tarun/.polar/networks/1/volumes/lnd/alice/tls.cert'
-    admin_mac_path='/home/tarun/.polar/networks/1/volumes/lnd/alice/data/chain/bitcoin/regtest/admin.macaroon'
-    grpc_location='127.0.0.1:10001'
-    ln_connection=LNConnection(tls_cert, admin_mac_path, grpc_location)
-    balance=ln_connection.wallet_balance()
-    info=ln_connection.get_node_info()
-    # stub=ln_stub()
-    # balance=wallet_balance(stub)
-    # info=wallet_info(stub)
-    print("Connected to my LN Node!")
-    return (balance, info)
+    pass
+#     tls_cert='/home/tarun/.polar/networks/1/volumes/lnd/alice/tls.cert'
+#     admin_mac_path='/home/tarun/.polar/networks/1/volumes/lnd/alice/data/chain/bitcoin/regtest/admin.macaroon'
+#     grpc_location='127.0.0.1:10001'
+#     ln_connection=LNConnection(tls_cert, admin_mac_path, grpc_location)
+#     balance=ln_connection.wallet_balance()
+#     info=ln_connection.get_node_info()
+#     # stub=ln_stub()
+#     # balance=wallet_balance(stub)
+#     # info=wallet_info(stub)
+#     print("Connected to my LN Node!")
+#     return (balance, info)
+
+def ln_node_info(lnc): #returning the node balance and info
+    # tls_cert='/home/tarun/.polar/networks/1/volumes/lnd/alice/tls.cert'
+    # admin_mac_path='/home/tarun/.polar/networks/1/volumes/lnd/alice/data/chain/bitcoin/regtest/admin.macaroon'
+    # grpc_location='127.0.0.1:10001'
+    # ln_connection=LNConnection(tls_cert, admin_mac_path, grpc_location)
+    balance=lnc.wallet_balance()
+    info=lnc.get_node_info()
+    counterparty_pubkey='031c43195c2aa38d186cc8194f30756e88fc2b65fd9adaeed25f0dfe1b6663d383'
+    cp_node_connected=connected(lnc, counterparty_pubkey)
+    return (balance, info, cp_node_connected)
+
+def connected(lnc, cp_pubkey):    # determines whether the Party's LN Node is connected to its counterpary's LN Node.
+    list_response=lnc.list_peers()
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    d=MessageToDict(list_response)  # convert the gRPC response object to a dictionary
+    connected=False
+    address=None
+    pub_key=None
+    for peer in d["peers"]:
+        if peer['pubKey']==cp_pubkey:
+            connected=True
+            address=peer['address']
+            pub_key=peer['pubKey']
+            continue
+    print(f'address: {address}')
+    print(f'connected: {connected}')
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    return(connected, pub_key, address)
+
+
 
 def connect_cp_ln_node(pk, lnc): # pk parameter is the counterparty's entity id.
     
-
-    print('#################################################################################################')
-    peers_before=lnc.list_peers()
-    print("List Peers")
-    print(peers_before)
- 
-    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-
-    connect_peer=lnc.connect_peer(pubkey='031c43195c2aa38d186cc8194f30756e88fc2b65fd9adaeed25f0dfe1b6663d383', host='172.18.0.3:9735')
+    connect_peer=lnc.connect_peer(pubkey='031c43195c2aa38d186cc8194f30756e88fc2b65fd9adaeed25f0dfe1b6663d383', host='172.20.0.2:9735')
     print("Connect to peer")
-    print(connect_peer)  #  a successful response is None
-
-    print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-
-    
-    peers_after=lnc.list_peers()
-    print("List Peers")
-    print(peers_after)
-    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-
-    # will build logic that if peer is not in peers_before but is in peers_after than return True else return False.
-    return True
+    print(connect_peer)
+    return connect_peer
     
 def channel_open(lnc, pk):#pk is the counterparty pk
     # some logic to get the counterparty node pubkey from the counterparty pk

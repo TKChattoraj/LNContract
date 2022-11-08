@@ -1,0 +1,16 @@
+
+<!--
+the context is  {'contract':contract_data, 'node':node_data}
+the 'contract'=(c, p, cp, obl_sorted) with contract, entity-party, entity-counterparty, list of obligations-mixture of sale of goods, services montetary obligations
+the 'node'=(balance, info, (connected, address)) with (balance response object, info response object), where the response object is the response from the calls to the ln node 
+-->
+
+{% extends "contracts/contract.html" %} 
+{% block cp_connection %}
+<tr>
+  <td><a href="/contracts/connect_cp/{{contract.2.pk}}" class="btn btn-sm btn-primary">Connect Counterparty</a></td>
+</tr> 
+   
+{% endblock %}
+
+
