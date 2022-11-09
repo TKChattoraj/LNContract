@@ -13,7 +13,7 @@ the 'channel'= dictionary from the Open Channel Response
     <td>Counterparty Node:  Connected.  PubKey:  {{node.2.1}}</td>
   </tr>
   <tr>
-    <td>Channel Opened  {{channel.chanOpen.channelPoint.fundingTxidBytes}}</td>
+    <td>Channel Pending  {{channel.chanPending.txid}}</td>
     <td>
       <a href="/contracts/disconnect_cp/{{contract.2.pk}}" class="btn btn-sm btn-primary">Close Channel</a>
     </td>
@@ -22,13 +22,3 @@ the 'channel'= dictionary from the Open Channel Response
    
 {% endblock %}
 
-
-<!--
-
-      <tr>
-      <td><a href="/contracts/connect_cp/{{contract.2.pk}}" class="btn btn-sm btn-primary">Connect Counterparty</a></td>
-    </tr>                
-
-
-
--->

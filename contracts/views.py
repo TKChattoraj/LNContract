@@ -54,12 +54,12 @@ def contract(request, pk):
         return render(request, 'contracts/contract_not_connected.html', context) 
 
 
-def connect(request, pk):
-    print(f'Connection to Party {pk} LN Node.')
-    contract=Contract.contract_context_data(request.session['contract']) 
-    connect=connect_ln_node(pk) #pk is the party primary, key tuple: (balance, info) 
-    context={'contract':contract, 'connect':connect}
-    return render(request, 'contracts/ln_node_connect.html', context)
+# def connect(request, pk):
+#     print(f'Connection to Party {pk} LN Node.')
+#     contract=Contract.contract_context_data(request.session['contract']) 
+#     connect=connect_ln_node(pk) #pk is the party primary, key tuple: (balance, info) 
+#     context={'contract':contract, 'connect':connect}
+#     return render(request, 'contracts/ln_node_connect.html', context)
 
 def connect_cp(request, pk):
     contract_data=Contract.contract_context_data(request.session['contract'])  
@@ -78,11 +78,11 @@ def connect_cp(request, pk):
 def open_channel(request, pk):
     contract_data=Contract.contract_context_data(request.session['contract']) 
     node_data=ln_node_info(lnc)
-    channel=channel_open(lnc, pk)
-    context={'contract': contract_data, 'node': node_data, 'channel': channel}
-    print("channel status:")
-    print(channel)
+    channel_response=channel_open(lnc, pk)
+      
+    context={'contract': contract_data, 'node': node_data, 'channel': channel_response}
     return render(request, 'contracts/channel_open.html', context)
+
 
 def serialize_list(l):
     print("in serialize")

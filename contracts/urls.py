@@ -20,7 +20,7 @@ from contracts import views
 
 urlpatterns = [
     path('', views.index),
-    path('connect/<int:pk>', views.connect),
+#    path('connect/<int:pk>', views.connect),
     path('connect_cp/<int:pk>',views.connect_cp),
     path('contracts/', views.contracts),
     path('contract/<int:pk>', views.contract),

@@ -1,4 +1,4 @@
-print("in the connect_ln_node")
+
 import contracts.nodes.lightning_pb2 as ln
 import contracts.nodes.lightning_pb2_grpc as lnrpc
 
@@ -29,7 +29,7 @@ class LNConnection():
         # That is if there is a local LN node.  
         # Here we are using Polar and so the TLS cert is located at
         # /home/tarun/.polar/networks/1/volumes/lnd/alice/tls.cert'
-        print("TLS path: {}".format(tls_path))
+    
         self.tls_cert=open(os.path.expanduser(tls_path), 'rb').read()
         self.cert_creds=grpc.ssl_channel_credentials(self.tls_cert)
 
@@ -241,9 +241,26 @@ def channel_open(lnc, pk):#pk is the counterparty pk
     amount=200000  # will need to get this from the obligation amount--so the obligation will need to pass from the template to the view to here.  In Satoshis
     responses=lnc.open_channel(pubkey, amount)
     print("&&&&&&&&&&&&&&&&& Channel Open &&&&&&&&&&&&&&&&&&&&&&")
+    print(type(responses))
     print(responses)
     for  response in responses:
-        print(response)
+        d=MessageToDict(response)
+        print(dict)
+        if 'chanPending' in d.keys():  
+            pass
+        if 'chanOpen' in d.keys(): 
+            print(d['chanOpen'])
+            return d
+        else:
+            return d
+
+
+
+        # if dict['chanPending']:
+        #     return dict['chanPending']
+        # elif dict['chanOpen']:
+        #     return dict['chanOpen']
+        yield dict        
         # print("Received message %s at %s" %
         #       (response.message, response.location))
     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
