@@ -245,22 +245,13 @@ def channel_open(lnc, pk):#pk is the counterparty pk
     print(responses)
     for  response in responses:
         d=MessageToDict(response)
-        print(dict)
-        if 'chanPending' in d.keys():  
-            pass
-        if 'chanOpen' in d.keys(): 
-            print(d['chanOpen'])
-            return d
-        else:
-            return d
-
-
-
+        print(d)
+        
         # if dict['chanPending']:
         #     return dict['chanPending']
         # elif dict['chanOpen']:
         #     return dict['chanOpen']
-        yield dict        
+        yield d       
         # print("Received message %s at %s" %
         #       (response.message, response.location))
     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%")

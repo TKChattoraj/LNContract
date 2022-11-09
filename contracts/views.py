@@ -79,9 +79,12 @@ def open_channel(request, pk):
     contract_data=Contract.contract_context_data(request.session['contract']) 
     node_data=ln_node_info(lnc)
     channel_response=channel_open(lnc, pk)
-      
-    context={'contract': contract_data, 'node': node_data, 'channel': channel_response}
-    return render(request, 'contracts/channel_open.html', context)
+    for response in channel_response:
+        if 'chanPending' in response.keys():
+            continue
+        if 'chanOpen' in response.keys():
+            context={'contract': contract_data, 'node': node_data, 'channel': response}
+            return render(request, 'contracts/channel_open.html', context)
 
 
 def serialize_list(l):
