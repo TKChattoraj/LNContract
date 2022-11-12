@@ -17,7 +17,10 @@ from contracts.models import (
     ContractText
 )
 
+from django.http import StreamingHttpResponse
+from django.template import Context, Template
 
+from google.protobuf.json_format import MessageToDict
 
 from contracts.nodes.connect_ln_node import connect_ln_node, LNConnection, connect_cp_ln_node, channel_open, ln_node_info, lnc
 
@@ -61,6 +64,9 @@ def contract(request, pk):
 #     context={'contract':contract, 'connect':connect}
 #     return render(request, 'contracts/ln_node_connect.html', context)
 
+# def webpack(request):
+#     return render(request, 'contracts/hello_webpack.html' )
+
 def connect_cp(request, pk):
     contract_data=Contract.contract_context_data(request.session['contract'])  
 
@@ -78,13 +84,59 @@ def connect_cp(request, pk):
 def open_channel(request, pk):
     contract_data=Contract.contract_context_data(request.session['contract']) 
     node_data=ln_node_info(lnc)
-    channel_response=channel_open(lnc, pk)
-    for response in channel_response:
-        if 'chanPending' in response.keys():
-            continue
+    #channel_response=channel_open(lnc, pk)  #this gets the generator function
+    print("*****************printing generator function result")
+    
+    response_stream=StreamingHttpResponse(generate_t(request, contract_data, node_data, pk))
+    return response_stream
+
+    #################
+    # for response in channel_response:  # in this line you seem to actually be running the generator function producing a "stream" of responses determined by each yeild encountered in the generator function--which in this case are a dictionary of the openstatus response--it seems like it is "running until a yield is encountered then return that yeild to the 'response' variable."
+    #     print("in the generator call for")
+    #     print(type(response))  #response is what is returned by the yeild
+    #     print(response)
+    #     context={'contract': contract_data, 'node': node_data, 'channel': response}
+        
+    #     if 'chanPending' in response.keys():
+    #         print("we are pending!")
+    #         print(context['channel']['chanPending']['txid'])
+    #     if 'chanOpen' in response.keys():
+    #         print("we are open")
+    #         break
+            
+    #         # return render(request, 'contracts/channel_open.html', context)
+    #################
+
+
+def generate_t(request, contract_data, node_data, pk):
+    channel_response=channel_open(lnc, pk)  #this gets the generator function
+    print("*****************in generate_t")
+    print(channel_response)
+    
+    for response in channel_response:  # in this line you seem to actually be running the generator function producing a "stream" of responses determined by each yeild encountered in the generator function--which in this case are a dictionary of the openstatus response--it seems like it is "running until a yield is encountered then return that yeild to the 'response' variable."
+        print("in the generator call for")
+        print(type(response))  #response is what is returned by the yeild
+        print(response)
+
         if 'chanOpen' in response.keys():
+            print("we are open")
             context={'contract': contract_data, 'node': node_data, 'channel': response}
-            return render(request, 'contracts/channel_open.html', context)
+            print(context['channel']['chanOpen']['channelPoint']['fundingTxidBytes'])
+            t=Template('contracs/channel_open.html')
+            yield (t.render(context))
+
+        
+        if 'chanPending' in response.keys():
+            print("we are pending!")
+            context={'contract': contract_data, 'node': node_data, 'channel': response}
+            print(context['channel']['chanPending']['txid'])
+            t=Template('contracts/channel_pending.html')
+            yield (t.render(context))
+            
+        
+            
+            # return render(request, 'con
+
 
 
 def serialize_list(l):

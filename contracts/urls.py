@@ -17,6 +17,7 @@ Including another URLconf
 from django.urls import include, path
 
 from contracts import views 
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('', views.index),
@@ -24,7 +25,8 @@ urlpatterns = [
     path('connect_cp/<int:pk>',views.connect_cp),
     path('contracts/', views.contracts),
     path('contract/<int:pk>', views.contract),
-    path('open_channel/<int:pk>', views.open_channel)
-    
+    path('open_channel/<int:pk>', views.open_channel),
+    path('hello-webpack/', TemplateView.as_view(template_name='contracts/hello_webpack.html'))
+
 ]
  
